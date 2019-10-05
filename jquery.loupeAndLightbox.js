@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       var $this = $(this),
           $targetImage = $this.find('> img'),
           $magnifiedImage = $('<img />'),
-          $loupe = $('<div class="larger" style="overflow: hidden;">'),
+          $loupe = $('<div class="larger_loupe" style="overflow: hidden;">'),
           $lightbox = $('<div class="lal_lightbox">'),
           $errorMessage = $('<div class="lal_errorMessage">'),
           $loader = $('<div class="lal_loader">Loading...</div>');
@@ -167,10 +167,28 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // Private functions //
       ///////////////////////
       function magnify(left, top) {
+        let loupe_local_margin = $loupe.width() + settings.loupe_margin;
+
+        if (settings.loupe_side == 'left') {
+            if ($targetImage.offset().left > $loupe.offset().left) {
+                settings.loupe_side = 'right';
+            }
+        }
+
+        if (settings.loupe_side == 'right') {
+            if (($loupe.offset().left + $loupe.width()) > ($targetImage.offset().left + $targetImage.width())) {
+                settings.loupe_side = 'left';
+            } else {
+                loupe_local_margin = -settings.loupe_margin;
+            }
+        }
+
         $loupe
           .css({
             //left:left-(settings.width/2),
             //top:top-(settings.height/2)
+            left: left - $targetImage.offset().left - loupe_local_margin,
+            top: top - $targetImage.offset().top - $loupe.height() - settings.loupe_margin
           });
 
         var heightDiff = $magnifiedImage.height()/$targetImage.height(),
@@ -254,7 +272,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     border:'2px solid #ccc',
     fadeSpeed:250,
     lightbox:true,
-    errorMessage:'Image load error'
+    errorMessage:'Image load error',
+    loupe_side: 'left',
+    loupe_margin: 20
   };
 })(jQuery);
 
