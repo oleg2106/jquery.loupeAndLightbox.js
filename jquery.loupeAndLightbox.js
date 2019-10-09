@@ -1,4 +1,7 @@
 /*
+* jQuery loupeAndLightbox Plugin was updated by @happyblitz
+* Version 1.0.1
+*
 jQuery loupeAndLightbox Plugin
 * Version 1.0
 * 05-10-2010
@@ -167,28 +170,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // Private functions //
       ///////////////////////
       function magnify(left, top) {
-        let loupe_local_margin = $loupe.width() + settings.loupe_margin;
+        let loupeX;
 
-        if (settings.loupe_side == 'left') {
-            if ($targetImage.offset().left > $loupe.offset().left) {
-                settings.loupe_side = 'right';
-            }
-        }
-
-        if (settings.loupe_side == 'right') {
-            if (($loupe.offset().left + $loupe.width()) > ($targetImage.offset().left + $targetImage.width())) {
-                settings.loupe_side = 'left';
-            } else {
-                loupe_local_margin = -settings.loupe_margin;
-            }
+        if (left - $loupe.width()/2 <= settings.loupeMaxPadding) {
+          loupeX = settings.loupeMaxPadding - $targetImage.offset().left;
+        } else if (left + $loupe.width()/2 >= $(window).width() - settings.loupeMaxPadding) {
+          loupeX = $(window).width() - settings.loupeMaxPadding - $loupe.width() - $targetImage.offset().left;
+        } else {
+          loupeX = left - $targetImage.offset().left - $loupe.width()/2;
         }
 
         $loupe
           .css({
             //left:left-(settings.width/2),
             //top:top-(settings.height/2)
-            left: left - $targetImage.offset().left - loupe_local_margin,
-            top: top - $targetImage.offset().top - $loupe.height() - settings.loupe_margin
+            left: loupeX,
+            top: top - $targetImage.offset().top - $loupe.height() - 2*settings.loupeMaxPadding
           });
 
         var heightDiff = $magnifiedImage.height()/$targetImage.height(),
@@ -273,8 +270,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     fadeSpeed:250,
     lightbox:true,
     errorMessage:'Image load error',
-    loupe_side: 'left',
-    loupe_margin: 20
+    loupeMaxPadding: 25
   };
 })(jQuery);
 
